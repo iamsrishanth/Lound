@@ -5,31 +5,38 @@ namespace Lound.Desktop
 {
     internal static class Theme
     {
-        public static readonly Color Navy = Color.FromArgb(18, 43, 78);
-        public static readonly Color NavyLight = Color.FromArgb(36, 65, 103);
-        public static readonly Color Gold = Color.FromArgb(232, 190, 35);
-        public static readonly Color Green = Color.FromArgb(39, 119, 86);
-        public static readonly Color Canvas = Color.FromArgb(244, 247, 249);
-        public static readonly Color Surface = Color.FromArgb(250, 251, 252);
-        public static readonly Color Text = Color.FromArgb(28, 41, 57);
-        public static readonly Color Muted = Color.FromArgb(92, 107, 124);
-        public static readonly Color Border = Color.FromArgb(211, 220, 229);
-        public static readonly Color Danger = Color.FromArgb(172, 48, 54);
+        public static readonly Color Navy = Color.FromArgb(22, 39, 61);
+        public static readonly Color NavyLight = Color.FromArgb(39, 61, 86);
+        public static readonly Color Gold = Color.FromArgb(235, 193, 54);
+        public static readonly Color Green = Color.FromArgb(31, 103, 84);
+        public static readonly Color Canvas = Color.FromArgb(243, 246, 249);
+        public static readonly Color Surface = Color.FromArgb(252, 253, 254);
+        public static readonly Color Text = Color.FromArgb(29, 42, 57);
+        public static readonly Color Muted = Color.FromArgb(87, 103, 121);
+        public static readonly Color Border = Color.FromArgb(216, 224, 232);
+        public static readonly Color Danger = Color.FromArgb(157, 47, 53);
         public static readonly Color Success = Color.FromArgb(35, 112, 78);
 
         public static Font Body(float size = 9.5f, FontStyle style = FontStyle.Regular) => new Font("Segoe UI", size, style);
 
         public static void StyleButton(Button button, bool primary = false, bool danger = false)
         {
+            var baseColor = danger ? Danger : primary ? Green : Surface;
             button.FlatStyle = FlatStyle.Flat;
             button.FlatAppearance.BorderSize = primary || danger ? 0 : 1;
             button.FlatAppearance.BorderColor = Border;
-            button.BackColor = danger ? Danger : primary ? Green : Surface;
+            button.FlatAppearance.MouseOverBackColor = danger
+                ? Color.FromArgb(139, 38, 44)
+                : primary ? Color.FromArgb(25, 88, 71) : Color.FromArgb(237, 242, 247);
+            button.FlatAppearance.MouseDownBackColor = danger
+                ? Color.FromArgb(124, 33, 39)
+                : primary ? Color.FromArgb(21, 75, 62) : Color.FromArgb(226, 234, 241);
+            button.BackColor = baseColor;
             button.ForeColor = primary || danger ? Surface : Navy;
             button.Font = Body(9.5f, FontStyle.Bold);
-            button.Height = 36;
-            button.MinimumSize = new Size(96, 36);
-            button.Padding = new Padding(12, 0, 12, 0);
+            button.Height = 38;
+            button.MinimumSize = new Size(100, 38);
+            button.Padding = new Padding(14, 0, 14, 0);
             button.Cursor = Cursors.Hand;
             button.UseVisualStyleBackColor = false;
         }
@@ -42,13 +49,13 @@ namespace Lound.Desktop
             if (control is TextBox textBox)
             {
                 textBox.BorderStyle = BorderStyle.FixedSingle;
-                textBox.Margin = new Padding(0, 2, 0, 10);
+                textBox.Margin = new Padding(0, 3, 0, 8);
             }
             if (control is ComboBox comboBox)
             {
                 comboBox.FlatStyle = FlatStyle.Flat;
                 comboBox.DropDownStyle = ComboBoxStyle.DropDownList;
-                comboBox.Margin = new Padding(0, 2, 0, 10);
+                comboBox.Margin = new Padding(0, 3, 0, 8);
             }
         }
 
@@ -60,7 +67,7 @@ namespace Lound.Desktop
                 AutoSize = true,
                 Font = Body(9f, FontStyle.Bold),
                 ForeColor = Muted,
-                Margin = new Padding(0, 8, 0, 1)
+                Margin = new Padding(0, 8, 0, 2)
             };
         }
 
@@ -70,26 +77,31 @@ namespace Lound.Desktop
             {
                 Dock = DockStyle.Fill,
                 BackgroundColor = Surface,
-                BorderStyle = BorderStyle.FixedSingle,
+                BorderStyle = BorderStyle.None,
                 GridColor = Border,
+                CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal,
+                ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None,
                 EnableHeadersVisualStyles = false,
                 ColumnHeadersDefaultCellStyle = new DataGridViewCellStyle
                 {
                     BackColor = Navy,
                     ForeColor = Surface,
                     Font = Body(9f, FontStyle.Bold),
-                    Padding = new Padding(6, 4, 6, 4)
+                    Padding = new Padding(10, 6, 8, 6),
+                    Alignment = DataGridViewContentAlignment.MiddleLeft,
+                    SelectionBackColor = Navy,
+                    SelectionForeColor = Surface
                 },
                 DefaultCellStyle = new DataGridViewCellStyle
                 {
                     BackColor = Surface,
                     ForeColor = Text,
-                    SelectionBackColor = Color.FromArgb(221, 232, 243),
+                    SelectionBackColor = Color.FromArgb(221, 235, 239),
                     SelectionForeColor = Navy,
-                    Padding = new Padding(5, 4, 5, 4),
+                    Padding = new Padding(10, 5, 8, 5),
                     Font = Body(9.3f)
                 },
-                AlternatingRowsDefaultCellStyle = new DataGridViewCellStyle { BackColor = Color.FromArgb(248, 250, 252) },
+                AlternatingRowsDefaultCellStyle = new DataGridViewCellStyle { BackColor = Color.FromArgb(247, 249, 251) },
                 RowHeadersVisible = false,
                 ReadOnly = true,
                 AutoGenerateColumns = false,
@@ -99,8 +111,8 @@ namespace Lound.Desktop
                 AllowUserToAddRows = false,
                 AllowUserToDeleteRows = false,
                 AllowUserToResizeRows = false,
-                ColumnHeadersHeight = 38,
-                RowTemplate = { Height = 34 }
+                ColumnHeadersHeight = 42,
+                RowTemplate = { Height = 40 }
             };
             grid.CellFormatting += (sender, e) =>
             {

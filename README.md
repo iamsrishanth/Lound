@@ -12,6 +12,14 @@ Lound is a Windows lost and found management system. The Windows Forms client ta
 
 The solution contains the API, Windows Forms client, and SQL Server integration tests. No SQL credentials are stored in the desktop client or checked into this repository.
 
+If installing LocalDB from SQL Server Express media, extract `SqlLocalDB.msi` and run the helper from an elevated PowerShell window:
+
+```powershell
+.\scripts\Install-LocalDB.ps1 'C:\path\to\SqlLocalDB.msi'
+```
+
+The helper verifies the Microsoft signature, accepts the LocalDB license property, and writes a verbose installer log under `%TEMP%`. LocalDB runs under the Windows account that starts the API and desktop client, so use your normal account for development after installation.
+
 ## Restore and build
 
 Run these commands from the repository root in PowerShell:
@@ -107,10 +115,10 @@ The suite covers admin role enforcement, pending report visibility, private clai
 
 ## Verification record
 
-The current development machine has the .NET 10 SDK and .NET Framework 4.8 runtime. A .NET Framework reference assemblies package is restored by the desktop project. Visual Studio, standalone MSBuild, the .NET Framework 4.8 Developer Pack, and SQL Server LocalDB were not installed on the machine.
+The development machine has the .NET 10 SDK, .NET Framework 4.8 runtime, and SQL Server LocalDB. A .NET Framework reference assemblies package is restored by the desktop project.
 
-`dotnet build .\Lound.sln --configuration Release` passed with zero warnings and zero errors. `dotnet list .\Lound.sln package --vulnerable --include-transitive` found no vulnerable packages. The integration project built and discovered six tests; with `LOUND_TEST_CONNECTION` unset, all six were skipped and none failed or passed.
+`dotnet build .\Lound.sln --configuration Release --no-restore` passed with zero warnings and zero errors. `dotnet list .\Lound.sln package --vulnerable --include-transitive` found no vulnerable packages. The Release SQL-backed integration suite passed all six tests against LocalDB.
 
-The API launched and `GET /health` returned `{"status":"ok"}`. The Windows Forms client launched at 120 DPI (125% effective scale). The final login title and subtitle fit, Tab navigation reached email, password, sign in, and registration, and an empty sign in showed inline validation. No credentials were entered and no accounts were created in that UI smoke.
+The API launched and `GET /health` returned `{"status":"ok"}`. A synthetic acceptance walkthrough used two standard users and an administrator to submit reports, verify them, submit competing claims, approve one claim, and reject the competing claim. Private claim evidence was visible to the administrator. API integration tests also cover handover and returned statistics.
 
-The LocalDB installer was downloaded from Microsoft and signed by Microsoft, but installation stopped with Windows Installer exit code `1603`: the current Windows account is not in the administrator group. SQL backed workflows and the two user plus administrator walkthrough cannot be exercised on this machine until LocalDB or another SQL Server instance is made available. See [VERIFICATION_RESULTS.md](tests/VERIFICATION_RESULTS.md) for the full check record.
+The refreshed sign-in screen was visually checked at 120 DPI (125% effective Windows scale). The application manifest declares PerMonitorV2, and forms use `AutoScaleMode.Font`. The latest search and admin screen layout changes were compiled; the sign-in screen was the only screen inspected visually after this redesign. See [VERIFICATION_RESULTS.md](tests/VERIFICATION_RESULTS.md) for the full check record.

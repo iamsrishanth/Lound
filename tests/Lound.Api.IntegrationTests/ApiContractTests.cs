@@ -197,12 +197,13 @@ public sealed class ApiContractTests(ApiFixture fixture) : IClassFixture<ApiFixt
 
         using var dashboard = await run.Admin.GetAsync("/v1/admin/dashboard");
         using var dashboardJson = await JsonDocument.ParseAsync(await dashboard.Content.ReadAsStreamAsync());
-        Assert.True(dashboardJson.RootElement.GetProperty("returnsRecorded").GetInt32() >= 1);
+        Assert.True(dashboardJson.RootElement.GetProperty("returnedItems").GetInt32() >= 1);
+        Assert.True(dashboardJson.RootElement.GetProperty("returnedClaims").GetInt32() >= 1);
 
         using var summary = await run.Admin.GetAsync("/v1/admin/reports/summary?from=2020-01-01&to=2035-12-31");
         Assert.Equal(HttpStatusCode.OK, summary.StatusCode);
         using var summaryJson = await JsonDocument.ParseAsync(await summary.Content.ReadAsStreamAsync());
-        Assert.True(summaryJson.RootElement.GetProperty("returnsRecorded").GetInt32() >= 1);
+        Assert.True(summaryJson.RootElement.GetProperty("returns").GetProperty("total").GetInt32() >= 1);
     }
 
     [SqlServerFact]
@@ -445,6 +446,9 @@ public sealed class ApiFixture : IAsyncLifetime
     {
         if (_factory is not null) return _factory;
         if (_databaseConnectionString is null) throw new InvalidOperationException("The test SQL database has not been initialized.");
+        Environment.SetEnvironmentVariable("Jwt__SigningKey", TestJwtKey);
+        Environment.SetEnvironmentVariable("Jwt__Issuer", "Lound.IntegrationTests");
+        Environment.SetEnvironmentVariable("Jwt__Audience", "Lound.IntegrationTests");
         _factory = new TestApiFactory(_databaseConnectionString, TestJwtKey);
         return _factory;
     }

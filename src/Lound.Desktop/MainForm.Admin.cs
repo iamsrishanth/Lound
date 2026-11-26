@@ -169,7 +169,7 @@ namespace Lound.Desktop
         {
             var page = NewPage();
             var hint = PageHint("Review and maintain submitted reports. Verify reports before they appear in shared search.");
-            var actions = new FlowLayoutPanel { Dock = DockStyle.Fill, Height = 56, FlowDirection = FlowDirection.LeftToRight, WrapContents = true, Padding = new Padding(0, 4, 0, 4), BackColor = Theme.Canvas };
+            var actions = new FlowLayoutPanel { Dock = DockStyle.Fill, Height = 92, FlowDirection = FlowDirection.LeftToRight, WrapContents = true, Padding = new Padding(8, 5, 8, 5), BackColor = Theme.Surface, BorderStyle = BorderStyle.FixedSingle };
             var moderation = MakeCombo("Any moderation", "Pending", "Verified", "Rejected", "Removed");
             moderation.Width = 155;
             var itemStatus = MakeCombo("Any item status", "Lost", "Found", "Claimed", "Returned");
@@ -257,7 +257,7 @@ namespace Lound.Desktop
         {
             var page = NewPage();
             var hint = PageHint("Review private ownership evidence. Evidence is available only to the claimant and authorized administrators.");
-            var actions = new FlowLayoutPanel { Dock = DockStyle.Fill, Height = 56, FlowDirection = FlowDirection.LeftToRight, WrapContents = true, Padding = new Padding(0, 4, 0, 4), BackColor = Theme.Canvas };
+            var actions = new FlowLayoutPanel { Dock = DockStyle.Fill, Height = 92, FlowDirection = FlowDirection.LeftToRight, WrapContents = true, Padding = new Padding(8, 5, 8, 5), BackColor = Theme.Surface, BorderStyle = BorderStyle.FixedSingle };
             var filter = MakeCombo("Any status", "Pending", "Approved", "Rejected", "Returned");
             filter.Width = 145;
             var reload = new Button { Text = "Load claims" };
@@ -266,14 +266,31 @@ namespace Lound.Desktop
             var reject = new Button { Text = "Reject claim" };
             var returned = new Button { Text = "Record handover" };
             Theme.StyleButton(reload, true); Theme.StyleButton(details); Theme.StyleButton(approve); Theme.StyleButton(reject, false, true); Theme.StyleButton(returned);
+            details.Enabled = false;
+            approve.Enabled = false;
+            reject.Enabled = false;
+            returned.Enabled = false;
             actions.Controls.AddRange(new Control[] { filter, reload, details, approve, reject, returned });
             var (grid, status) = AddAdminGridPage(page, hint, actions);
             AddGridColumn(grid, "Item", nameof(ClaimDto.ItemTitle), 1.3f);
             AddGridColumn(grid, "Claimant", nameof(ClaimDto.ClaimantDisplayName));
             AddGridColumn(grid, "Status", nameof(ClaimDto.Status));
             AddGridColumn(grid, "Submitted", nameof(ClaimDto.SubmittedAt), 1.2f);
+            AddGridColumn(grid, "Returned", nameof(ClaimDto.ReturnedAt), 1.2f);
 
-            async Task RefreshAsync()
+            ClaimDto Selected() => grid.CurrentRow?.DataBoundItem as ClaimDto;
+            void UpdateClaimActions()
+            {
+                var claim = Selected();
+                var pending = claim != null && string.Equals(claim.Status, "Pending", StringComparison.OrdinalIgnoreCase);
+                details.Enabled = claim != null;
+                approve.Enabled = pending;
+                reject.Enabled = pending;
+                returned.Enabled = claim != null && string.Equals(claim.Status, "Approved", StringComparison.OrdinalIgnoreCase);
+            }
+            grid.SelectionChanged += (s, e) => UpdateClaimActions();
+
+            async Task RefreshAsync(string preferredClaimId = null)
             {
                 status.Text = "Loading claims...";
                 try
@@ -281,16 +298,34 @@ namespace Lound.Desktop
                     var path = "v1/admin/claims?page=1&pageSize=100" + (filter.SelectedIndex > 0 ? "&status=" + Q(filter.Text) : string.Empty);
                     var rows = await SafeListAsync<ClaimDto>(path);
                     grid.DataSource = rows.ToList();
+                    grid.ClearSelection();
+                    grid.CurrentCell = null;
+                    if (!string.IsNullOrWhiteSpace(preferredClaimId))
+                    {
+                        var preferredRow = grid.Rows.Cast<DataGridViewRow>()
+                            .FirstOrDefault(row => row.DataBoundItem is ClaimDto claim && claim.Id == preferredClaimId);
+                        if (preferredRow != null && preferredRow.Cells.Count > 0)
+                        {
+                            preferredRow.Selected = true;
+                            grid.CurrentCell = preferredRow.Cells[0];
+                        }
+                    }
+                    UpdateClaimActions();
                     status.ForeColor = Theme.Muted;
-                    status.Text = rows.Count == 0 ? "No claims match this filter." : rows.Count + " claim(s). Select a row to review it.";
+                    status.Text = rows.Count == 0 ? "No claims match this filter." : rows.Count + " claim(s). Select a row to see the actions available for its status.";
                 }
                 catch (Exception ex) { ShowError(status, ex); }
             }
-            ClaimDto Selected() => grid.CurrentRow?.DataBoundItem as ClaimDto;
             async Task RunClaimActionAsync(Button button, string action, bool needsReason = false)
             {
                 var claim = Selected();
                 if (claim == null) { status.ForeColor = Theme.Danger; status.Text = "Select a claim first."; return; }
+                if (action == "record-return" && !string.Equals(claim.Status, "Approved", StringComparison.OrdinalIgnoreCase))
+                {
+                    status.ForeColor = Theme.Danger;
+                    status.Text = "Record handover is available after a claim is approved.";
+                    return;
+                }
                 var reason = needsReason ? TextInputDialog.Prompt(this, "Reject claim", "Add a reason for rejecting this claim:", true) : null;
                 if (needsReason && reason == null) return;
                 button.Enabled = false;
@@ -298,10 +333,10 @@ namespace Lound.Desktop
                 {
                     await _api.PostNoContentAsync("v1/admin/claims/" + Uri.EscapeDataString(claim.Id) + "/" + action,
                         needsReason ? new { reason } : null);
-                    await RefreshAsync();
+                    await RefreshAsync(claim.Id);
                 }
                 catch (Exception ex) { ShowError(status, ex); }
-                finally { button.Enabled = true; }
+                finally { UpdateClaimActions(); }
             }
             reload.Click += async (s, e) => await RefreshAsync();
             details.Click += (s, e) =>

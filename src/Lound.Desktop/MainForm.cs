@@ -63,7 +63,7 @@ namespace Lound.Desktop
             _shell.BackColor = Theme.Canvas;
             _shell.ColumnCount = 2;
             _shell.RowCount = 1;
-            _shell.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 222));
+            _shell.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 232));
             _shell.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
             _shell.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
             Controls.Add(_shell);
@@ -78,20 +78,20 @@ namespace Lound.Desktop
                 BackColor = Theme.Navy
             };
             sidebarLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
-            sidebarLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 104));
+            sidebarLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 108));
             sidebarLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
             sidebarLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 66));
             sidebar.Controls.Add(sidebarLayout);
 
-            var brand = new Panel { Dock = DockStyle.Top, Height = 104, BackColor = Theme.Navy };
+            var brand = new Panel { Dock = DockStyle.Top, Height = 108, BackColor = Theme.Navy };
             sidebarLayout.Controls.Add(brand, 0, 0);
             brand.Controls.Add(new Label
             {
                 Text = "LOUND",
                 AutoSize = true,
-                Font = Theme.Body(20f, FontStyle.Bold),
+                Font = Theme.Body(22f, FontStyle.Bold),
                 ForeColor = Theme.Surface,
-                Location = new Point(23, 22)
+                Location = new Point(24, 20)
             });
             brand.Controls.Add(new Label
             {
@@ -99,9 +99,9 @@ namespace Lound.Desktop
                 AutoSize = true,
                 Font = Theme.Body(8.2f, FontStyle.Bold),
                 ForeColor = Color.FromArgb(205, 216, 230),
-                Location = new Point(25, 56)
+                Location = new Point(26, 58)
             });
-            brand.Controls.Add(new Panel { BackColor = Theme.Gold, Location = new Point(24, 80), Size = new Size(42, 4) });
+            brand.Controls.Add(new Panel { BackColor = Theme.Gold, Location = new Point(25, 82), Size = new Size(44, 4) });
 
             var navHost = new Panel { Dock = DockStyle.Fill, BackColor = Theme.Navy, Padding = new Padding(12, 10, 12, 8) };
             sidebarLayout.Controls.Add(navHost, 0, 1);
@@ -113,7 +113,7 @@ namespace Lound.Desktop
             _navigation.Padding = new Padding(0);
             navHost.Controls.Add(_navigation);
 
-            var footer = new Panel { Dock = DockStyle.Fill, BackColor = Theme.Navy, Padding = new Padding(12, 10, 12, 10) };
+            var footer = new Panel { Dock = DockStyle.Fill, BackColor = Theme.Navy, Padding = new Padding(12, 10, 12, 12) };
             sidebarLayout.Controls.Add(footer, 0, 2);
             var signOut = new Button { Text = "Sign out", Dock = DockStyle.Fill, TabStop = true };
             signOut.FlatStyle = FlatStyle.Flat;
@@ -122,13 +122,16 @@ namespace Lound.Desktop
             signOut.BackColor = Theme.Navy;
             signOut.ForeColor = Theme.Surface;
             signOut.Font = Theme.Body(9.5f, FontStyle.Bold);
+            signOut.Cursor = Cursors.Hand;
+            signOut.FlatAppearance.MouseOverBackColor = Theme.NavyLight;
+            signOut.FlatAppearance.MouseDownBackColor = Color.FromArgb(47, 70, 96);
             signOut.Click += async (s, e) => await SignOutAsync();
             footer.Controls.Add(signOut);
 
             _right.Dock = DockStyle.Fill;
             _right.ColumnCount = 1;
             _right.RowCount = 2;
-            _right.RowStyles.Add(new RowStyle(SizeType.Absolute, 76));
+            _right.RowStyles.Add(new RowStyle(SizeType.Absolute, 82));
             _right.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
             _right.BackColor = Theme.Canvas;
             _shell.Controls.Add(_right, 1, 0);
@@ -136,9 +139,9 @@ namespace Lound.Desktop
             var header = new Panel { Dock = DockStyle.Fill, BackColor = Theme.Surface, Padding = new Padding(24, 12, 24, 10) };
             header.Controls.Add(_pageTitle);
             _pageTitle.AutoSize = true;
-            _pageTitle.Font = Theme.Body(16f, FontStyle.Bold);
+            _pageTitle.Font = Theme.Body(17f, FontStyle.Bold);
             _pageTitle.ForeColor = Theme.Navy;
-            _pageTitle.Location = new Point(24, 24);
+            _pageTitle.Location = new Point(24, 27);
             _accountLabel.AutoSize = true;
             _accountLabel.TextAlign = ContentAlignment.MiddleRight;
             _accountLabel.Anchor = AnchorStyles.Top | AnchorStyles.Right;
@@ -146,8 +149,9 @@ namespace Lound.Desktop
             _accountLabel.ForeColor = Theme.Muted;
             _accountLabel.Text = _session.User == null ? string.Empty : _session.User.DisplayName;
             header.Controls.Add(_accountLabel);
-            header.Resize += (s, e) => _accountLabel.Location = new Point(Math.Max(260, header.ClientSize.Width - _accountLabel.Width - 28), 28);
-            _accountLabel.Location = new Point(Math.Max(260, header.ClientSize.Width - _accountLabel.Width - 28), 28);
+            header.Resize += (s, e) => _accountLabel.Location = new Point(Math.Max(280, header.ClientSize.Width - _accountLabel.Width - 28), 31);
+            _accountLabel.Location = new Point(Math.Max(280, header.ClientSize.Width - _accountLabel.Width - 28), 31);
+            header.Controls.Add(new Panel { Dock = DockStyle.Bottom, Height = 1, BackColor = Theme.Border });
             _right.Controls.Add(header, 0, 0);
 
             _content.Dock = DockStyle.Fill;
@@ -164,12 +168,12 @@ namespace Lound.Desktop
                 {
                     Text = "ADMINISTRATION",
                     AutoSize = false,
-                    Width = 190,
+                    Width = 202,
                     Height = 30,
                     TextAlign = ContentAlignment.BottomLeft,
                     Font = Theme.Body(8f, FontStyle.Bold),
                     ForeColor = Color.FromArgb(169, 188, 209),
-                    Margin = new Padding(3, 18, 0, 4)
+                    Margin = new Padding(3, 18, 0, 5)
                 };
                 _navigation.Controls.Add(divider);
             }
@@ -178,18 +182,20 @@ namespace Lound.Desktop
             {
                 Text = text,
                 TextAlign = ContentAlignment.MiddleLeft,
-                Width = 190,
-                Height = 42,
+                Width = 202,
+                Height = 44,
                 FlatStyle = FlatStyle.Flat,
                 BackColor = Theme.Navy,
                 ForeColor = Color.FromArgb(231, 237, 244),
                 Font = Theme.Body(9.5f, FontStyle.Bold),
-                Padding = new Padding(14, 0, 6, 0),
+                Padding = new Padding(16, 0, 8, 0),
                 Margin = new Padding(0, 2, 0, 2),
                 Cursor = Cursors.Hand,
                 TabStop = true
             };
             button.FlatAppearance.BorderSize = 0;
+            button.FlatAppearance.MouseOverBackColor = Theme.NavyLight;
+            button.FlatAppearance.MouseDownBackColor = Color.FromArgb(47, 70, 96);
             button.Click += (s, e) => Navigate(text, action, button);
             _navigation.Controls.Add(button);
             _navButtons.Add(button);
@@ -240,7 +246,17 @@ namespace Lound.Desktop
 
         private static Label PageHint(string text)
         {
-            return new Label { Text = text, Dock = DockStyle.Top, AutoSize = false, Height = 36, ForeColor = Theme.Muted, Font = Theme.Body(9.5f), TextAlign = ContentAlignment.MiddleLeft };
+            return new Label
+            {
+                Text = text,
+                Dock = DockStyle.Top,
+                AutoSize = false,
+                Height = 36,
+                ForeColor = Theme.Muted,
+                Font = Theme.Body(9.5f),
+                TextAlign = ContentAlignment.MiddleLeft,
+                Padding = new Padding(2, 0, 2, 0)
+            };
         }
 
         private void ShowError(Label label, Exception ex)
@@ -276,15 +292,15 @@ namespace Lound.Desktop
                 BackColor = Theme.Canvas
             };
             layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 36));
-            layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 118));
+            layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 132));
             layout.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
             layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 38));
             layout.Controls.Add(PageHint("Search verified reports. Open a result for details and claim instructions."), 0, 0);
             page.Controls.Add(layout);
 
-            var filterPanel = new Panel { Dock = DockStyle.Fill, BackColor = Theme.Surface, Padding = new Padding(12) };
-            var filters = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 6, RowCount = 2, BackColor = Theme.Surface };
-            for (var i = 0; i < 6; i++) filters.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100f / 6f));
+            var filterPanel = new Panel { Dock = DockStyle.Fill, BackColor = Theme.Surface, Padding = new Padding(12, 8, 12, 8), BorderStyle = BorderStyle.FixedSingle };
+            var filters = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 4, RowCount = 2, BackColor = Theme.Surface };
+            for (var i = 0; i < 4; i++) filters.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25));
             filters.RowStyles.Add(new RowStyle(SizeType.Percent, 50));
             filters.RowStyles.Add(new RowStyle(SizeType.Percent, 50));
             filterPanel.Controls.Add(filters);
@@ -299,18 +315,18 @@ namespace Lound.Desktop
             AddFilter(filters, "Keyword", keyword, 0, 0);
             AddFilter(filters, "Category", category, 1, 0);
             AddFilter(filters, "Location", location, 2, 0);
-            AddFilter(filters, "From date", from, 3, 0);
-            AddFilter(filters, "To date", to, 4, 0);
-            AddFilter(filters, "Report type", type, 0, 1);
-            AddFilter(filters, "Item status", itemStatus, 1, 1);
+            AddFilter(filters, "Report type", type, 3, 0);
+            AddFilter(filters, "From date", from, 0, 1);
+            AddFilter(filters, "To date", to, 1, 1);
+            AddFilter(filters, "Item status", itemStatus, 2, 1);
             var find = new Button { Text = "Search", Anchor = AnchorStyles.Left | AnchorStyles.Bottom };
             Theme.StyleButton(find, true);
-            find.Width = 120;
-            find.Margin = new Padding(6, 20, 4, 4);
-            filters.Controls.Add(find, 5, 1);
+            find.Width = 132;
+            find.Margin = new Padding(8, 15, 4, 3);
+            filters.Controls.Add(find, 3, 1);
             layout.Controls.Add(filterPanel, 0, 1);
 
-            var gridHost = new Panel { Dock = DockStyle.Fill, BackColor = Theme.Surface, Padding = new Padding(1) };
+            var gridHost = new Panel { Dock = DockStyle.Fill, BackColor = Theme.Surface, Padding = new Padding(1), BorderStyle = BorderStyle.FixedSingle };
             var grid = Theme.Grid();
             AddGridColumn(grid, "Title", nameof(ItemDto.Title), 1.4f);
             AddGridColumn(grid, "Category", nameof(ItemDto.Category));
@@ -378,7 +394,8 @@ namespace Lound.Desktop
                 RowCount = 5,
                 BackColor = Theme.Surface,
                 Padding = new Padding(18),
-                Margin = new Padding(0)
+                Margin = new Padding(0),
+                BorderStyle = BorderStyle.FixedSingle
             };
             form.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 110));
             form.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
@@ -509,7 +526,7 @@ namespace Lound.Desktop
             root.RowStyles.Add(new RowStyle(SizeType.Absolute, 36));
             root.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
             root.Controls.Add(PageHint("Update the name shown on your account."), 0, 0);
-            var form = new Panel { BackColor = Theme.Surface, Dock = DockStyle.Top, Height = 230, Padding = new Padding(22) };
+            var form = new Panel { BackColor = Theme.Surface, Dock = DockStyle.Top, Height = 230, Padding = new Padding(22), BorderStyle = BorderStyle.FixedSingle };
             var name = new TextBox { Text = _session.User?.DisplayName ?? string.Empty, Width = 400 };
             Theme.StyleInput(name);
             var email = new TextBox { Text = _session.User?.Email ?? string.Empty, Width = 400, ReadOnly = true };
@@ -614,11 +631,12 @@ namespace Lound.Desktop
 
         private static void AddFilter(TableLayoutPanel table, string label, Control input, int column, int row)
         {
-            var panel = new Panel { Dock = DockStyle.Fill, Padding = new Padding(4, 0, 4, 0) };
+            var panel = new Panel { Dock = DockStyle.Fill, Padding = new Padding(5, 1, 5, 1), Margin = new Padding(2, 1, 2, 1) };
             var title = Theme.FieldLabel(label);
-            title.SetBounds(4, 0, 145, 18);
-            input.SetBounds(4, 20, Math.Max(112, table.Width / 7 - 10), 27);
-            input.Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right;
+            title.SetBounds(4, 0, 170, 18);
+            input.SetBounds(4, 20, Math.Max(112, table.Width / Math.Max(1, table.ColumnCount) - 16), 27);
+            input.Anchor = AnchorStyles.Left | AnchorStyles.Top;
+            panel.Resize += (s, e) => input.Width = Math.Max(112, panel.ClientSize.Width - 8);
             if (input is TextBox) Theme.StyleInput(input);
             panel.Controls.Add(title);
             panel.Controls.Add(input);
